@@ -22,6 +22,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     select: { id: true, name: true },
   });
   const user = await getUser(request);
+  console.log("user", user);
 
   const data: LoaderData = {
     jokeListItems,
@@ -31,6 +32,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function JokesRoute() {
+  // throw new Error("Testing Error Boundary");
   const data = useLoaderData<LoaderData>();
 
   return (
@@ -81,3 +83,11 @@ export default function JokesRoute() {
     </div>
   );
 }
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error);
+  return (
+    <div className="error-container">{`There was an error loading joke by the . Sorry.`}</div>
+  );
+}
+
+export function CatchBoundary() {}
