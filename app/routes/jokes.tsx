@@ -1,6 +1,6 @@
 import type { LinksFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Outlet, Link, useLoaderData } from "@remix-run/react";
+import { Outlet, Link, useLoaderData, Form } from "@remix-run/react";
 import { db } from "~/utils/db.server";
 import { getUser } from "~/utils/session.server";
 import stylesUrl from "~/styles/jokes.css";
@@ -16,13 +16,13 @@ export const links: LinksFunction = () => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  console.log("call");
   const jokeListItems = await db.joke.findMany({
     take: 5,
     orderBy: { createdAt: "desc" },
     select: { id: true, name: true },
   });
   const user = await getUser(request);
-  console.log("user", user);
 
   const data: LoaderData = {
     jokeListItems,
@@ -40,7 +40,12 @@ export default function JokesRoute() {
       <header className="jokes-header">
         <div className="container">
           <h1 className="home-link">
-            <Link to="/" title="Remix Jokes" aria-label="Remix Jokes">
+            <Link
+              to="/"
+              prefetch="intent"
+              title="Remix Jokes"
+              aria-label="Remix Jokes"
+            >
               <span className="logo">🤪</span>
               <span className="logo-medium">J🤪KES</span>
             </Link>
@@ -48,21 +53,25 @@ export default function JokesRoute() {
           {data.user ? (
             <div className="user-info">
               <span>{`Hi ${data.user.username}`}</span>
-              <form action="/logout" method="post">
+              <Form action="/logout" method="post">
                 <button type="submit" className="button">
                   Logout
                 </button>
-              </form>
+              </Form>
             </div>
           ) : (
-            <Link to="/login">Login</Link>
+            <Link to="/login" prefetch="intent">
+              Login
+            </Link>
           )}
         </div>
       </header>
       <main className="jokes-main">
         <div className="container">
           <div className="jokes-list">
-            <Link to=".">Get a random joke</Link>
+            <Link to="." prefetch="intent">
+              Get a random joke
+            </Link>
             <p>Here are a few more jokes to check out:</p>
             <ul>
               {data.jokeListItems.map((joke) => (
@@ -71,7 +80,7 @@ export default function JokesRoute() {
                 </li>
               ))}
             </ul>
-            <Link to="new" className="button">
+            <Link to="new" className="button" prefetch="intent">
               Add your own
             </Link>
           </div>

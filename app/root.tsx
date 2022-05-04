@@ -1,5 +1,12 @@
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
-import { Links, LiveReload, Outlet, useCatch } from "@remix-run/react";
+import {
+  Links,
+  LiveReload,
+  Outlet,
+  useCatch,
+  Scripts,
+  Meta,
+} from "@remix-run/react";
 
 import globalStylesUrl from "./styles/global.css";
 import globalMediumStylesUrl from "./styles/global-medium.css";
@@ -24,12 +31,20 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export const meta: MetaFunction = () => ({
-  charset: "utf-8",
-  title: "My Amazing App",
-  viewport: "width=device-width,initial-scale=1",
-  description: "My amazing app, in progress",
-});
+export const meta: MetaFunction = () => {
+  const description = `Learn Remix and laugh at the same time!`;
+  return {
+    charset: "utf-8",
+    description,
+    keywords: "Remix,jokes",
+    "twitter:image": "https://remix-jokes.lol/social.png",
+    "twitter:card": "summary_large_image",
+    "twitter:creator": "@remix_run",
+    "twitter:site": "@remix_run",
+    "twitter:title": "Remix Jokes",
+    "twitter:description": description,
+  };
+};
 
 function Document({
   children,
@@ -41,12 +56,13 @@ function Document({
   return (
     <html lang="en">
       <head>
-        <meta charSet="utf-8" />
+        <Meta />
         <title>{title}</title>
         <Links />
       </head>
       <body>
         {children}
+        <Scripts />
         <LiveReload />
       </body>
     </html>
@@ -61,6 +77,7 @@ export default function App() {
   );
 }
 export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error);
   return (
     <Document title="Uh-oh!">
       <div className="error-container">
